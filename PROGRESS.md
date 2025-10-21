@@ -8,7 +8,6 @@
 [✅] Sprachen mit Kompetenzstufen (edit_languages_data Zeile 999-1068 + Export Backend)
 [✅] Profilzusammenfassung zentriert unter Header (exporters.py Zeile 146-157)
 [✅] Aufgaben als max 5 Stichpunkte mit Toggle-Button (exporters.py + streamlit_app.py)
-[ ] Auf der Seite Berufserfahrungen einen Button mit "Alle ausklappen" haben, Bei dem sich die berufserfahrungen alle öffnen
 
 - ✅ File Uploader (PDF, DOCX, JPG, PNG, max 10MB)
 - ✅ OpenAI API Key Management
@@ -39,12 +38,13 @@
 
 **TODO - Persönliche Daten:**
 ```
-[ ] Foto-Upload für Profilbild
-[ ] Geburtsjahr Feld
+
 
 
 
 #### Tab 2: Berufserfahrung
+- ✅ Foto-Upload für Profilbild
+- ✅ Geburtsjahr Feld
 - ✅ Liste aller Positionen
 - ✅ Add/Edit/Delete Funktionen
 - ✅ Felder: Position, Unternehmen, Start-/Enddatum, Beschreibung
@@ -540,6 +540,37 @@
 - ✅ Weitere Pakete aktualisiert (reportlab, fastapi, uvicorn, etc.)
 - ✅ runtime.txt erstellt mit Python 3.12 Spezifikation
 
+### Version 1.0.4 (2025-10-21) - UI Improvements
+- ✅ Textfeld "Ziehe deinen Lebenslauf hierher..." bei Schritt 1 entfernt
+- ✅ Berufserfahrungs-Dropdown-Bug behoben (bleiben jetzt beim Editieren geöffnet)
+- ✅ Dark Mode angepasst: Dunkelgrauer Hintergrund (#2d2d2d) mit weißer Schrift
+- ✅ Light Mode angepasst: Weißer Hintergrund mit schwarzer Schrift
+- ✅ Expander-Farben für beide Modi optimiert
+- ✅ HTML-Drucklogik implementiert: Automatische Fußzeile auf jeder A4-Seite
+- ✅ Seitenumbrüche optimiert: Keine Umbrüche mitten in Berufserfahrungen/Ausbildungen
+- ✅ Fußzeilen-Abstand optimiert: Kein Überschneiden mit Content, professionelles Spacing
+- ✅ Header auf 5cm (50mm) statisch begrenzt
+- ✅ Header zeigt: Position, Name, Wohnort, Geburtsjahr
+- ✅ Profilzusammenfassung zwischen Header und Berufserfahrung (optional per Button)
+- ✅ Ansprechpartner-Daten werden unterhalb der Zusammenfassung angezeigt
+- ✅ Export-Kategorien-Filter: Berufserfahrung, Ausbildung, Fähigkeiten, Zertifizierungen aktivieren/deaktivieren
+- ✅ Live-Vorschau: Automatische Aktualisierung bei Änderungen der Export-Einstellungen
+- ✅ Fußzeile näher an den Rand positioniert (5mm vom unteren Rand)
+- ✅ Trennlinie in Fußzeile entfernt
+- ✅ Überschriften auf neuen Seiten haben mehr Abstand zur oberen Kante (15mm)
+- ✅ Klassische Profilvorlage erstellt (strukturiertes Layout ähnlich dem Screenshot)
+- ✅ Template-Auswahl implementiert (Modern vs. Classic)
+- ✅ Fußzeile und Seitenumbrüche in beiden Templates verfügbar
+- ✅ Klassische Vorlage optimiert: Logo größer, Profil-Überschrift moderner und blau
+- ✅ Datumsanzeige in einer Zeile (kein Zeilenumbruch)
+- ✅ Fähigkeiten-Boxen im klassischen Design hinzugefügt
+- ✅ Seitenumbrüche optimiert: 1cm (10mm) Abstand oben auf neuen Seiten (beide Vorlagen)
+- ✅ Obere Seitenränder auf 30mm erhöht für besseres Layout
+- ✅ PDF-Export optimiert: Auto-Druckdialog beim Öffnen der HTML-Datei
+- ✅ Keine externen System-Dependencies benötigt (reine Python-Lösung)
+- ✅ Aufgaben in moderner Profilvorlage werden korrekt angezeigt
+- ✅ Enhanced Print-CSS für perfekte Druckausgabe
+
 ### Geplante Updates
 ```
 Version 1.1.0 - Template-System erweitern
@@ -565,6 +596,3 @@ _Nutze diesen Bereich für spontane Gedanken und Ideen:_
 **Last Updated:** 2025-10-21  
 **Maintainer:** Lennard Kuss  
 **Project Status:** 🟢 Active Development
-
-
-Ich würde außerdem gerne das wenn ich Schritt 1 erledigt habe, dass ich dann als erstes die Profilvorlage sehen kann, auch wenn ich leere Profilvorlage auswählen. Ich möchte einfach nur das HTML, die HTML-Datei sehen, die erstellt wurde. Bei Bedarf kann ich dann mit der Bearbeitung weitermachen.  

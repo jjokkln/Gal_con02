@@ -15,11 +15,62 @@ from docx import Document
 from docx.shared import Inches
 from docx.enum.text import WD_ALIGN_PARAGRAPH
 from docx.oxml.shared import OxmlElement, qn
-
-
 class ProfileExporter:
     def __init__(self):
         pass
+    
+    def prepare_for_print(self, html_string: str) -> str:
+        """
+        Prepare HTML for browser-based PDF printing with optimized CSS
+        """
+        # Enhanced print CSS for better page breaks and layout
+        enhanced_print_css = """
+        <style>
+            @media print {
+                * {
+                    -webkit-print-color-adjust: exact !important;
+                    print-color-adjust: exact !important;
+                    color-adjust: exact !important;
+                }
+                @page {
+                    size: A4;
+                    margin: 0;
+                }
+                body {
+                    margin: 0;
+                    padding: 0;
+                }
+            }
+            @media screen {
+                body {
+                    background: #525252;
+                    padding: 20px;
+                }
+                .profile-container, .container {
+                    box-shadow: 0 0 20px rgba(0,0,0,0.3);
+                    margin: 0 auto;
+                    background: white;
+                }
+            }
+        </style>
+        <script>
+            // Auto-trigger print dialog on page load
+            window.onload = function() {
+                // Give browser time to render
+                setTimeout(function() {
+                    window.print();
+                }, 500);
+            };
+        </script>
+        """
+        
+        # Insert enhanced CSS and script before closing head tag
+        if "</head>" in html_string:
+            html_with_enhancements = html_string.replace("</head>", f"{enhanced_print_css}</head>")
+        else:
+            html_with_enhancements = enhanced_print_css + html_string
+            
+        return html_with_enhancements
     
     def html_to_pdf(self, html_string: str) -> str:
         """

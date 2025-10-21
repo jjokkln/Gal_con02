@@ -34,16 +34,16 @@ st.set_page_config(
 def apply_theme_css(dark_mode=False):
     """Apply theme CSS based on dark_mode setting"""
     if dark_mode:
-        # DARK MODE
+        # DARK MODE - Dunkelgrauer Hintergrund mit weißer Schrift
         st.markdown("""
         <style>
             [data-testid="stAppViewContainer"] {
-                background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%) !important;
+                background: #2d2d2d !important;
             }
             
             .main {
-                background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%) !important;
-                color: #f0f0f0 !important;
+                background: #2d2d2d !important;
+                color: #ffffff !important;
             }
     
     /* Headers */
@@ -149,6 +149,146 @@ def apply_theme_css(dark_mode=False):
         background-color: #764ba2 !important;
     }
     
+    /* Expanders - Modern Card Style - Dark Mode */
+    [data-testid="stExpander"] {
+        background-color: #3d3d3d !important;
+        border: none !important;
+        border-radius: 12px !important;
+        box-shadow: 0 2px 12px rgba(0,0,0,0.3) !important;
+        margin-bottom: 1rem !important;
+        transition: all 0.3s ease !important;
+    }
+    
+    [data-testid="stExpander"]:hover {
+        box-shadow: 0 4px 20px rgba(102, 126, 234, 0.3) !important;
+        transform: translateY(-2px) !important;
+    }
+    
+    /* Text color override - Dark Mode */
+    p, span, label, h1, h2, h3, h4, h5, h6 {
+        color: #ffffff !important;
+    }
+            
+            /* Markdown text */
+            .stMarkdown {
+                color: #ffffff !important;
+            }
+            
+            /* Success/Info/Error boxes */
+            .stAlert {
+                background-color: #3d3d3d !important;
+                color: #ffffff !important;
+                border: 1px solid #555 !important;
+            }
+            
+            /* Sidebar (if used) */
+            [data-testid="stSidebar"] {
+                background-color: #3d3d3d !important;
+            }
+        </style>
+        """, unsafe_allow_html=True)
+    else:
+        # LIGHT MODE - Weißer Hintergrund mit schwarzer Schrift
+        st.markdown("""
+        <style>
+            [data-testid="stAppViewContainer"] {
+                background: #ffffff !important;
+            }
+            
+            .main {
+                background: #ffffff !important;
+                color: #000000 !important;
+            }
+    
+    /* Headers */
+    .main-header {
+        text-align: center;
+        padding: 2rem 0;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white !important;
+        border-radius: 10px;
+        margin-bottom: 2rem;
+    }
+    
+    .main-header h1, .main-header p {
+        color: white !important;
+    }
+    
+    .section-header {
+        color: #667eea !important;
+        border-bottom: 2px solid #667eea;
+        padding-bottom: 0.5rem;
+        margin: 1rem 0;
+    }
+    
+    /* Text inputs and textareas */
+    [data-baseweb="input"], [data-baseweb="textarea"] {
+        background-color: #f8f9fa !important;
+        color: #1e1e1e !important;
+        border: 1px solid #dee2e6 !important;
+    }
+    
+    /* Enhanced File Uploader with Drag & Drop Animation */
+    [data-testid="stFileUploader"] {
+        background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%) !important;
+        border: 3px dashed #667eea !important;
+        border-radius: 16px !important;
+        padding: 3rem !important;
+        transition: all 0.3s ease !important;
+        position: relative !important;
+    }
+    
+    [data-testid="stFileUploader"]:hover {
+        border-color: #764ba2 !important;
+        background: linear-gradient(135deg, rgba(102, 126, 234, 0.2) 0%, rgba(118, 75, 162, 0.2) 100%) !important;
+        transform: translateY(-2px) !important;
+        box-shadow: 0 8px 24px rgba(102, 126, 234, 0.3) !important;
+    }
+    
+    [data-testid="stFileUploader"]::before {
+        content: "📁";
+        font-size: 4rem;
+        display: block;
+        text-align: center;
+        margin-bottom: 1rem;
+        animation: bounce 2s infinite;
+    }
+    
+    @keyframes bounce {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-10px); }
+    }
+    
+    [data-testid="stFileUploader"] label {
+        color: #667eea !important;
+        font-size: 1.3rem !important;
+        font-weight: 700 !important;
+        text-align: center !important;
+        display: block !important;
+    }
+    
+    [data-testid="stFileUploader"] small {
+        color: #6c757d !important;
+        font-size: 1rem !important;
+        display: block !important;
+        text-align: center !important;
+        margin-top: 0.5rem !important;
+    }
+    
+    /* Buttons */
+    .stButton button {
+        background-color: #667eea !important;
+        color: white !important;
+        border: none !important;
+        border-radius: 8px;
+        padding: 0.5rem 1rem;
+        font-weight: 500;
+    }
+    
+    .stButton button:hover {
+        background-color: #764ba2 !important;
+    }
+    
     /* Expanders - Modern Card Style */
     [data-testid="stExpander"] {
         background-color: white !important;
@@ -164,20 +304,20 @@ def apply_theme_css(dark_mode=False):
         transform: translateY(-2px) !important;
     }
     
-    /* Text color override */
+    /* Text color override - Light Mode */
     p, span, label, h1, h2, h3, h4, h5, h6 {
-        color: #1e1e1e !important;
+        color: #000000 !important;
     }
             
             /* Markdown text */
             .stMarkdown {
-                color: #1e1e1e !important;
+                color: #000000 !important;
             }
             
             /* Success/Info/Error boxes */
             .stAlert {
                 background-color: #f8f9fa !important;
-                color: #1e1e1e !important;
+                color: #000000 !important;
                 border: 1px solid #dee2e6 !important;
             }
             
@@ -214,7 +354,12 @@ def initialize_session_state():
         st.session_state.dark_mode = False  # Default: Light Mode
     if 'export_options' not in st.session_state:
         st.session_state.export_options = {
-            "limit_tasks": True  # Default: max 5 Aufgaben
+            "limit_tasks": True,  # Default: max 5 Aufgaben
+            "show_experience": True,
+            "show_education": True,
+            "show_skills": True,
+            "show_certifications": True,
+            "show_contact_person": True
         }
     if 'show_summary' not in st.session_state:
         st.session_state.show_summary = True
@@ -378,18 +523,7 @@ def show_upload_section():
             st.rerun()
         return
     
-    # File upload - Enhanced Design with better messaging
-    st.markdown("""
-    <div style="text-align: center; margin: 2rem 0;">
-        <h3 style="color: #667eea; margin-bottom: 1rem;">
-            📄 Ziehe deinen Lebenslauf hierher oder klicke zum Durchsuchen
-        </h3>
-        <p style="color: #6c757d; font-size: 1.1rem;">
-            Unterstützte Formate: PDF, DOCX, JPG, PNG (max. 10MB)
-        </p>
-    </div>
-    """, unsafe_allow_html=True)
-    
+    # File upload
     uploaded_file = st.file_uploader(
         "Datei hochladen:",
         type=['pdf', 'docx', 'jpg', 'png'],
@@ -737,7 +871,7 @@ def edit_experience_data():
     
     # Edit existing experience
     for i, exp in enumerate(experience):
-        with st.expander(f"💼 {exp.get('position', 'Neue Position')} bei {exp.get('company', 'Neues Unternehmen')}", expanded=False):
+        with st.expander(f"💼 {exp.get('position', 'Neue Position')} bei {exp.get('company', 'Neues Unternehmen')}", expanded=True):
             col1, col2 = st.columns(2)
             
             with col1:
@@ -1190,6 +1324,40 @@ def show_summary_and_export():
             help="Profilzusammenfassung im Export anzeigen"
         )
         st.session_state.show_summary = show_summary
+        
+        # Export Kategorien
+        show_experience = st.checkbox(
+            "💼 Berufserfahrung",
+            value=st.session_state.export_options.get("show_experience", True),
+            key="summary_show_experience"
+        )
+        show_education = st.checkbox(
+            "🎓 Ausbildung & Weiterbildung",
+            value=st.session_state.export_options.get("show_education", True),
+            key="summary_show_education"
+        )
+        show_skills = st.checkbox(
+            "⚡ Fähigkeiten & Kompetenzen",
+            value=st.session_state.export_options.get("show_skills", True),
+            key="summary_show_skills"
+        )
+        show_certifications = st.checkbox(
+            "📜 Zertifizierungen",
+            value=st.session_state.export_options.get("show_certifications", True),
+            key="summary_show_certifications"
+        )
+        show_contact_person = st.checkbox(
+            "👤 Ansprechpartner",
+            value=st.session_state.export_options.get("show_contact_person", True),
+            key="summary_show_contact_person"
+        )
+        
+        # Update export_options
+        st.session_state.export_options["show_experience"] = show_experience
+        st.session_state.export_options["show_education"] = show_education
+        st.session_state.export_options["show_skills"] = show_skills
+        st.session_state.export_options["show_certifications"] = show_certifications
+        st.session_state.export_options["show_contact_person"] = show_contact_person
 
         st.write(f"🏢 **Unternehmen:** {st.session_state.company.capitalize()}")
 
@@ -1219,7 +1387,7 @@ def show_summary_and_export():
             export_data = prepare_export_data(st.session_state.cv_data, st.session_state.anonymize)
             
             # Generate HTML preview
-            html_content = render_profile_html(export_data, st.session_state.company)
+            html_content = render_profile_html(export_data, st.session_state.company, st.session_state.template)
             
             # Show preview in expandable section
             with st.expander("📄 HTML Vorschau", expanded=True):
@@ -1241,22 +1409,21 @@ def show_summary_and_export():
             try:
                 export_data = prepare_export_data(st.session_state.cv_data, st.session_state.anonymize)
                 
-                # Generate HTML (same as preview)
-                html_content = render_profile_html(export_data, st.session_state.company)
+                # Generate HTML
+                html_content = render_profile_html(export_data, st.session_state.company, st.session_state.template)
                 
-                # Add print-friendly CSS
+                # Prepare for print (auto-opens print dialog)
                 exporter = ProfileExporter()
-                html_for_print = exporter.html_to_pdf(html_content)
+                print_ready_html = exporter.prepare_for_print(html_content)
                 
-                # Show HTML in new page with print button
                 st.markdown("---")
                 st.success("✅ Profil bereit zum Drucken!")
-                st.info("💡 **Anleitung:** Klicke unten auf 'Profil in neuem Tab öffnen', dann drücke `Cmd+P` (Mac) oder `Strg+P` (Windows) und wähle 'Als PDF speichern'.")
+                st.info("💡 **Anleitung:** Klicke auf den Button unten. Es öffnet sich ein neues Fenster mit dem Druckdialog. Wähle 'Als PDF speichern'.")
                 
-                # Create download for HTML
+                # Download button with auto-print HTML
                 st.download_button(
-                    label="📄 Profil in neuem Tab öffnen",
-                    data=html_for_print,
+                    label="📄 PDF erstellen (Druckansicht öffnen)",
+                    data=print_ready_html,
                     file_name=f"profile_{st.session_state.company}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.html",
                     mime="text/html",
                     use_container_width=True
@@ -1304,6 +1471,50 @@ def show_preview_and_export():
     
     st.markdown("---")
     
+    # Profilzusammenfassung Toggle
+    show_summary = st.checkbox(
+        "Zusammenfassung einblenden",
+        value=st.session_state.show_summary,
+        help="Zeigt die Profilzusammenfassung zwischen Header und Berufserfahrung an"
+    )
+    st.session_state.show_summary = show_summary
+    
+    # Export Kategorien
+    show_experience = st.checkbox(
+        "💼 Berufserfahrung",
+        value=st.session_state.export_options.get("show_experience", True),
+        key="export_show_experience"
+    )
+    show_education = st.checkbox(
+        "🎓 Ausbildung & Weiterbildung",
+        value=st.session_state.export_options.get("show_education", True),
+        key="export_show_education"
+    )
+    show_skills = st.checkbox(
+        "⚡ Fähigkeiten & Kompetenzen",
+        value=st.session_state.export_options.get("show_skills", True),
+        key="export_show_skills"
+    )
+    show_certifications = st.checkbox(
+        "📜 Zertifizierungen",
+        value=st.session_state.export_options.get("show_certifications", True),
+        key="export_show_certifications"
+    )
+    show_contact_person = st.checkbox(
+        "👤 Ansprechpartner",
+        value=st.session_state.export_options.get("show_contact_person", True),
+        key="export_show_contact_person"
+    )
+    
+    # Update export_options
+    st.session_state.export_options["show_experience"] = show_experience
+    st.session_state.export_options["show_education"] = show_education
+    st.session_state.export_options["show_skills"] = show_skills
+    st.session_state.export_options["show_certifications"] = show_certifications
+    st.session_state.export_options["show_contact_person"] = show_contact_person
+    
+    st.markdown("---")
+    
     # Anonymisierung Toggle
     st.markdown("### 🔒 Datenschutz-Optionen")
     anonymize = st.checkbox(
@@ -1318,13 +1529,28 @@ def show_preview_and_export():
     
     st.markdown("---")
     
+    # Live Preview Toggle
+    auto_preview = st.checkbox(
+        "🔄 Live-Vorschau (automatische Aktualisierung)",
+        value=True,
+        help="Zeigt die Vorschau automatisch an und aktualisiert sie bei Änderungen"
+    )
+    
     # Generate preview
+    show_preview = False
     if st.button("👁️ Vorschau generieren", type="primary"):
+        show_preview = True
+    
+    # Auto-preview if enabled
+    if auto_preview:
+        show_preview = True
+    
+    if show_preview:
         try:
             # Prepare data for export (with or without anonymization)
             export_data = prepare_export_data(st.session_state.cv_data, st.session_state.anonymize)
             
-            html_content = render_profile_html(export_data, st.session_state.company)
+            html_content = render_profile_html(export_data, st.session_state.company, st.session_state.template)
             
             # Show preview in iframe
             st.markdown("### 📄 Profilvorschau")
@@ -1344,21 +1570,22 @@ def show_preview_and_export():
                 # Prepare data for export (with or without anonymization)
                 export_data = prepare_export_data(st.session_state.cv_data, st.session_state.anonymize)
                 
-                # Generate HTML (same as preview)
-                html_content = render_profile_html(export_data, st.session_state.company)
+                # Generate HTML
+                html_content = render_profile_html(export_data, st.session_state.company, st.session_state.template)
                 
-                # Add print-friendly CSS
+                # Prepare for print
                 exporter = ProfileExporter()
-                html_for_print = exporter.html_to_pdf(html_content)
+                print_ready_html = exporter.prepare_for_print(html_content)
                 
                 st.success("✅ Profil bereit!")
-                st.info("💡 Öffne die HTML-Datei und drücke Cmd+P / Strg+P zum Drucken als PDF.")
+                st.info("💡 Die Datei öffnet sich automatisch mit Druckdialog.")
                 
                 st.download_button(
-                    label="📄 HTML öffnen",
-                    data=html_for_print,
+                    label="📄 PDF erstellen",
+                    data=print_ready_html,
                     file_name=f"profile_{st.session_state.company}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.html",
-                    mime="text/html"
+                    mime="text/html",
+                    use_container_width=True
                 )
                 
             except Exception as e:
@@ -1411,6 +1638,27 @@ def prepare_export_data(cv_data, anonymize=False):
         personal["name"] = anonymize_name(personal["name"])
     
     export_data["personal"] = personal
+    
+    # Add show_summary flag
+    export_data["show_summary"] = st.session_state.get("show_summary", True)
+    
+    # Add contact person if selected and enabled
+    if st.session_state.get("selected_contact") and st.session_state.export_options.get("show_contact_person", True):
+        export_data["contact_person"] = {
+            "name": st.session_state.selected_contact.get("name", ""),
+            "email": st.session_state.selected_contact.get("email", ""),
+            "phone": st.session_state.selected_contact.get("phone", "")
+        }
+    
+    # Filter categories based on export_options
+    if not st.session_state.export_options.get("show_experience", True):
+        export_data["experience"] = []
+    if not st.session_state.export_options.get("show_education", True):
+        export_data["education"] = []
+    if not st.session_state.export_options.get("show_skills", True):
+        export_data["skills"] = []
+    if not st.session_state.export_options.get("show_certifications", True):
+        export_data["certifications"] = []
     
     # Add export options
     export_data["_export_options"] = {
