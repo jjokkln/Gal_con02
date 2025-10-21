@@ -527,6 +527,19 @@
 - ✅ API Key Eingabe in Sidebar entfernt (nur noch .env)
 - ✅ Direktes Update von session_state.cv_data
 
+### Version 1.0.2 (2025-10-21) - GitHub Integration
+- ✅ Projekt erfolgreich auf GitHub Repository gepusht (https://github.com/jjokkln/Gal_con02.git)
+- ✅ Git Remote konfiguriert mit PAT-Authentifizierung
+- ✅ Main Branch auf GitHub synchronisiert
+
+### Version 1.0.3 (2025-10-21) - Streamlit Cloud Deployment Fix
+- ✅ Dependencies auf Python 3.12/3.13 kompatible Versionen aktualisiert
+- ✅ Pillow von 10.1.0 auf 11.0.0 aktualisiert (behebt KeyError '__version__')
+- ✅ Streamlit von 1.28.0 auf 1.40.2 aktualisiert
+- ✅ OpenAI von 1.3.0 auf 1.57.4 aktualisiert
+- ✅ Weitere Pakete aktualisiert (reportlab, fastapi, uvicorn, etc.)
+- ✅ runtime.txt erstellt mit Python 3.12 Spezifikation
+
 ### Geplante Updates
 ```
 Version 1.1.0 - Template-System erweitern
@@ -549,7 +562,7 @@ _Nutze diesen Bereich für spontane Gedanken und Ideen:_
 
 ---
 
-**Last Updated:** 2025-10-20  
+**Last Updated:** 2025-10-21  
 **Maintainer:** Lennard Kuss  
 **Project Status:** 🟢 Active Development
 
