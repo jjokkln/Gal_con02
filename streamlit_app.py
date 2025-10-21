@@ -31,19 +31,20 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# Custom CSS for unified design (Light & Dark Mode)
-st.markdown("""
-<style>
-    /* Force light mode styles */
-    [data-testid="stAppViewContainer"] {
-        background-color: #ffffff !important;
-    }
-    
-    /* Main container */
-    .main {
-        background-color: #ffffff !important;
-        color: #1e1e1e !important;
-    }
+def apply_theme_css(dark_mode=False):
+    """Apply theme CSS based on dark_mode setting"""
+    if dark_mode:
+        # DARK MODE
+        st.markdown("""
+        <style>
+            [data-testid="stAppViewContainer"] {
+                background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%) !important;
+            }
+            
+            .main {
+                background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%) !important;
+                color: #f0f0f0 !important;
+            }
     
     /* Headers */
     .main-header {
@@ -73,22 +74,65 @@ st.markdown("""
         border: 1px solid #dee2e6 !important;
     }
     
-    /* File uploader styling */
+    /* Enhanced File Uploader with Drag & Drop Animation */
     [data-testid="stFileUploader"] {
-        background-color: #f8f9fa !important;
-        border: 2px dashed #667eea !important;
-        border-radius: 12px !important;
-        padding: 2rem !important;
+        background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%) !important;
+        border: 3px dashed #667eea !important;
+        border-radius: 16px !important;
+        padding: 3rem !important;
+        transition: all 0.3s ease !important;
+        position: relative !important;
+    }
+    
+    [data-testid="stFileUploader"]:hover {
+        border-color: #764ba2 !important;
+        background: linear-gradient(135deg, rgba(102, 126, 234, 0.2) 0%, rgba(118, 75, 162, 0.2) 100%) !important;
+        transform: translateY(-2px) !important;
+        box-shadow: 0 8px 24px rgba(102, 126, 234, 0.3) !important;
+    }
+    
+    [data-testid="stFileUploader"]::before {
+        content: "📁";
+        font-size: 4rem;
+        display: block;
+        text-align: center;
+        margin-bottom: 1rem;
+        animation: bounce 2s infinite;
+    }
+    
+    @keyframes bounce {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-10px); }
     }
     
     [data-testid="stFileUploader"] label {
-        color: #1e1e1e !important;
-        font-size: 1.1rem !important;
-        font-weight: 600 !important;
+        color: #667eea !important;
+        font-size: 1.3rem !important;
+        font-weight: 700 !important;
+        text-align: center !important;
+        display: block !important;
     }
     
     [data-testid="stFileUploader"] small {
         color: #6c757d !important;
+        font-size: 1rem !important;
+        display: block !important;
+        text-align: center !important;
+        margin-top: 0.5rem !important;
+    }
+    
+    [data-testid="stFileUploader"]::before {
+        content: "📁";
+        font-size: 4rem;
+        display: block;
+        text-align: center;
+        margin-bottom: 1rem;
+        animation: bounce 2s infinite;
+    }
+    
+    @keyframes bounce {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-10px); }
     }
     
     /* Buttons */
@@ -124,25 +168,29 @@ st.markdown("""
     p, span, label, h1, h2, h3, h4, h5, h6 {
         color: #1e1e1e !important;
     }
-    
-    /* Markdown text */
-    .stMarkdown {
-        color: #1e1e1e !important;
-    }
-    
-    /* Success/Info/Error boxes */
-    .stAlert {
-        background-color: #f8f9fa !important;
-        color: #1e1e1e !important;
-        border: 1px solid #dee2e6 !important;
-    }
-    
-    /* Sidebar (if used) */
-    [data-testid="stSidebar"] {
-        background-color: #f8f9fa !important;
-    }
-</style>
-""", unsafe_allow_html=True)
+            
+            /* Markdown text */
+            .stMarkdown {
+                color: #1e1e1e !important;
+            }
+            
+            /* Success/Info/Error boxes */
+            .stAlert {
+                background-color: #f8f9fa !important;
+                color: #1e1e1e !important;
+                border: 1px solid #dee2e6 !important;
+            }
+            
+            /* Sidebar (if used) */
+            [data-testid="stSidebar"] {
+                background-color: #f8f9fa !important;
+            }
+        </style>
+        """, unsafe_allow_html=True)
+
+def toggle_theme():
+    """Toggle between light and dark mode"""
+    st.session_state.dark_mode = not st.session_state.dark_mode
 
 def initialize_session_state():
     """Initialize session state variables"""
@@ -162,18 +210,73 @@ def initialize_session_state():
         st.session_state.template = "modern"  # Default template
     if 'current_edit_step' not in st.session_state:
         st.session_state.current_edit_step = 1  # 1=Personal, 2=Experience, 3=Education, 4=Skills, 5=Summary
+    if 'dark_mode' not in st.session_state:
+        st.session_state.dark_mode = False  # Default: Light Mode
+    if 'export_options' not in st.session_state:
+        st.session_state.export_options = {
+            "limit_tasks": True  # Default: max 5 Aufgaben
+        }
+    if 'show_summary' not in st.session_state:
+        st.session_state.show_summary = True
+
+def month_year_picker(label, key, default_value=""):
+    """Custom month/year picker"""
+    col1, col2 = st.columns(2)
+    
+    months = ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"]
+    years = [str(y) for y in range(2025, 1969, -1)]  # 2025 bis 1970
+    
+    # Parse default value if exists (format: MM/YYYY)
+    default_month = "01"
+    default_year = "2025"
+    if default_value and "/" in default_value:
+        parts = default_value.split("/")
+        if len(parts) == 2:
+            default_month = parts[0]
+            default_year = parts[1]
+    
+    with col1:
+        month = st.selectbox(
+            f"{label} (Monat)",
+            months,
+            index=months.index(default_month) if default_month in months else 0,
+            key=f"{key}_month"
+        )
+    
+    with col2:
+        year = st.selectbox(
+            f"{label} (Jahr)",
+            years,
+            index=years.index(default_year) if default_year in years else 0,
+            key=f"{key}_year"
+        )
+    
+    return f"{month}/{year}"
 
 def main():
     """Main application function"""
     initialize_session_state()
     
-    # Header
-    st.markdown("""
-    <div class="main-header">
-        <h1>📄 CV2Profile</h1>
-        <p>Konvertiere deinen Lebenslauf in eine professionelle Profilvorlage</p>
-    </div>
-    """, unsafe_allow_html=True)
+    # Apply theme CSS
+    apply_theme_css(st.session_state.dark_mode)
+    
+    # Header with Theme Toggle
+    col_header, col_theme = st.columns([9, 1])
+    
+    with col_header:
+        st.markdown("""
+        <div class="main-header">
+            <h1>📄 CV2Profile</h1>
+            <p>Konvertiere deinen Lebenslauf in eine professionelle Profilvorlage</p>
+        </div>
+        """, unsafe_allow_html=True)
+    
+    with col_theme:
+        if st.button("🌙" if not st.session_state.dark_mode else "☀️", 
+                     key="theme_toggle",
+                     help="Dark/Light Mode umschalten"):
+            toggle_theme()
+            st.rerun()
     
     # Reset button (ohne Sidebar)
     col1, col2, col3 = st.columns([1, 1, 8])
@@ -186,6 +289,7 @@ def main():
             st.session_state.anonymize = False
             st.session_state.current_edit_step = 1
             st.session_state.session_id = str(uuid.uuid4())
+            st.session_state.show_summary = True
             st.rerun()
     
     # Main content area
@@ -256,27 +360,40 @@ def show_upload_section():
             st.session_state.cv_data = {
                 "personal": {
                     "name": "",
-                    "email": "",
-                    "phone": "",
-                    "address": "",
-                    "linkedin": "",
-                    "summary": ""
+                    "position": "",
+                    "city": "",
+                    "birth_year": "",
+                    "availability": "",
+                    "summary": "",
+                    "photo": None,
+                    "photo_filename": None
                 },
                 "experience": [],
                 "education": [],
                 "skills": [],
-                "certifications": []
+                "certifications": [],
+                "languages": []
             }
             st.session_state.extraction_complete = True
             st.rerun()
         return
     
-    # File upload - Improved Design
-    st.markdown("### 📄 Drag & Drop oder durchsuchen")
+    # File upload - Enhanced Design with better messaging
+    st.markdown("""
+    <div style="text-align: center; margin: 2rem 0;">
+        <h3 style="color: #667eea; margin-bottom: 1rem;">
+            📄 Ziehe deinen Lebenslauf hierher oder klicke zum Durchsuchen
+        </h3>
+        <p style="color: #6c757d; font-size: 1.1rem;">
+            Unterstützte Formate: PDF, DOCX, JPG, PNG (max. 10MB)
+        </p>
+    </div>
+    """, unsafe_allow_html=True)
+    
     uploaded_file = st.file_uploader(
-        "Lade deinen Lebenslauf hoch:",
+        "Datei hochladen:",
         type=['pdf', 'docx', 'jpg', 'png'],
-        help="Unterstützte Formate: PDF, DOCX, JPG, PNG (max. 10MB)",
+        help="Drag & Drop oder durchsuchen",
         label_visibility="collapsed"
     )
     
@@ -342,8 +459,6 @@ def validate_current_step():
         personal = cv_data.get("personal", {})
         if not personal.get("name") or personal.get("name").strip() == "":
             errors.append("Name ist ein Pflichtfeld")
-        if not personal.get("position") or personal.get("position").strip() == "":
-            errors.append("Position ist ein Pflichtfeld")
         if not personal.get("city") or personal.get("city").strip() == "":
             errors.append("Stadt/Wohnort ist ein Pflichtfeld")
     
@@ -453,10 +568,12 @@ def show_edit_section():
     elif step == 2:
         edit_experience_data()
     elif step == 3:
-        # Combined Education & Skills
+        # Combined Education & Skills & Languages
         edit_education_data()
         st.markdown("---")
         edit_skills_data()
+        st.markdown("---")
+        edit_languages_data()
     elif step == 4:
         show_summary_and_export()
     
@@ -475,7 +592,7 @@ def edit_personal_data():
                 border-left: 4px solid #667eea;
                 margin-bottom: 1.5rem;">
         <p style="margin: 0; color: #1e1e1e;">
-            📝 <b>Pflichtfelder:</b> Name, Position und Stadt müssen ausgefüllt sein.
+            📝 <b>Pflichtfelder:</b> Name und Stadt müssen ausgefüllt sein.
         </p>
     </div>
     """, unsafe_allow_html=True)
@@ -491,12 +608,50 @@ def edit_personal_data():
     
     with col2:
         city = st.text_input("Stadt/Wohnort", value=personal.get("city", ""), help="Wird im Export angezeigt")
-        availability = st.text_input("Verfügbarkeit", value=personal.get("availability", ""), 
+        birth_year = st.text_input("Geburtsjahr", value=personal.get("birth_year", ""),
+                                  help="z.B. 1990", placeholder="1990")
+        availability = st.text_input("Verfügbarkeit", value=personal.get("availability", ""),
                                     help="z.B. 'Ab sofort' oder 'ab 01.03.2024'",
                                     placeholder="Ab sofort / ab DD.MM.JJJJ")
     
     summary = st.text_area("Profilbeschreibung", value=personal.get("summary", ""), height=150, 
                           help="Kurze Zusammenfassung der Qualifikationen und Erfahrungen")
+    
+    # Profilbild Upload
+    st.markdown("---")
+    st.markdown("### 📸 Profilbild (Optional)")
+    uploaded_photo = st.file_uploader(
+        "Lade ein Profilbild hoch",
+        type=['jpg', 'jpeg', 'png'],
+        help="Quadratisches Bild empfohlen (max 2MB)",
+        key="profile_photo_upload"
+    )
+    
+    if uploaded_photo:
+        # Validiere Dateigröße (2MB)
+        if uploaded_photo.size > 2 * 1024 * 1024:
+            st.error("Bild ist zu groß! Maximum: 2MB")
+        else:
+            # Bild in Base64 konvertieren für Session State
+            photo_bytes = uploaded_photo.read()
+            photo_base64 = base64.b64encode(photo_bytes).decode()
+            st.session_state.cv_data["personal"]["photo"] = photo_base64
+            st.session_state.cv_data["personal"]["photo_filename"] = uploaded_photo.name
+            
+            # Preview anzeigen
+            col1, col2, col3 = st.columns([1, 1, 1])
+            with col2:
+                st.image(photo_bytes, width=150, caption="Profilbild Vorschau")
+    elif st.session_state.cv_data["personal"].get("photo"):
+        # Bereits hochgeladenes Bild anzeigen
+        col1, col2, col3 = st.columns([1, 1, 1])
+        with col2:
+            photo_data = base64.b64decode(st.session_state.cv_data["personal"]["photo"])
+            st.image(photo_data, width=150, caption="Aktuelles Profilbild")
+            if st.button("🗑️ Bild entfernen", key="remove_photo"):
+                st.session_state.cv_data["personal"]["photo"] = None
+                st.session_state.cv_data["personal"]["photo_filename"] = None
+                st.rerun()
     
     # Ansprechpartner Auswahl
     st.markdown("---")
@@ -528,12 +683,19 @@ def edit_personal_data():
             st.warning(f"Ansprechpartner konnten nicht geladen werden: {str(e)}")
     
     # Update session state - essential fields + position + availability
+    # Preserve photo data if it exists
+    photo_data = personal.get("photo")
+    photo_filename = personal.get("photo_filename")
+    
     st.session_state.cv_data["personal"] = {
         "name": name,
         "position": position,
         "city": city,
+        "birth_year": birth_year,
         "availability": availability,
-        "summary": summary
+        "summary": summary,
+        "photo": photo_data,
+        "photo_filename": photo_filename
     }
 
 def edit_experience_data():
@@ -583,10 +745,24 @@ def edit_experience_data():
                 company = st.text_input(f"Unternehmen {i+1}", value=exp.get("company", ""), key=f"comp_{i}")
             
             with col2:
-                start_date = st.text_input(f"Startdatum {i+1}", value=exp.get("start_date", ""), key=f"start_{i}",
-                                          placeholder="MM/JJJJ")
-                end_date = st.text_input(f"Enddatum {i+1}", value=exp.get("end_date", ""), key=f"end_{i}",
-                                        placeholder="MM/JJJJ oder Heute")
+                start_date = month_year_picker(
+                    "Start", 
+                    f"exp_start_{i}", 
+                    exp.get("start_date", "")
+                )
+                
+                # End date mit "Heute" Option
+                is_current = st.checkbox("Aktuell", key=f"exp_current_{i}", 
+                                         value=(exp.get("end_date", "") == "Heute"))
+                
+                if is_current:
+                    end_date = "Heute"
+                else:
+                    end_date = month_year_picker(
+                        "Ende", 
+                        f"exp_end_{i}", 
+                        exp.get("end_date", "") if exp.get("end_date") != "Heute" else ""
+                    )
             
             # Tasks as list (one per line)
             st.markdown("**Aufgaben** (eine pro Zeile - wird als Stichpunkte angezeigt):")
@@ -718,8 +894,16 @@ def edit_education_data():
                 institution = st.text_input(f"Institution {i+1}", value=edu.get("institution", ""), key=f"inst_{i}")
             
             with col2:
-                start_date = st.text_input(f"Startdatum {i+1}", value=edu.get("start_date", ""), key=f"edu_start_{i}")
-                end_date = st.text_input(f"Enddatum {i+1}", value=edu.get("end_date", ""), key=f"edu_end_{i}")
+                start_date = month_year_picker(
+                    "Start", 
+                    f"edu_start_{i}", 
+                    edu.get("start_date", "")
+                )
+                end_date = month_year_picker(
+                    "Ende", 
+                    f"edu_end_{i}", 
+                    edu.get("end_date", "")
+                )
             
             description = st.text_area(f"Beschreibung {i+1}", value=edu.get("description", ""), key=f"edu_desc_{i}")
             
@@ -815,6 +999,77 @@ def edit_skills_data():
         for skill in skills_list:
             st.markdown(f"• {skill}")
 
+def edit_languages_data():
+    """Edit languages with proficiency levels"""
+    st.markdown('<h3 class="section-header">🌍 Sprachen</h3>', unsafe_allow_html=True)
+    
+    st.markdown("""
+    <div style="background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%); 
+                padding: 1rem; 
+                border-radius: 12px; 
+                border-left: 4px solid #667eea;
+                margin-bottom: 1.5rem;">
+        <p style="margin: 0; color: #1e1e1e;">
+            🗣️ <b>Tipp:</b> Füge Sprachen mit Kompetenzstufen hinzu (A1-C2 oder Beschreibung).
+        </p>
+    </div>
+    """, unsafe_allow_html=True)
+    
+    # Initialize languages list
+    if "languages" not in st.session_state.cv_data:
+        st.session_state.cv_data["languages"] = []
+    
+    languages = st.session_state.cv_data["languages"]
+    
+    # Add new language
+    if st.button("➕ Neue Sprache hinzufügen", key="add_lang_btn"):
+        st.session_state.cv_data["languages"].append({
+            "name": "",
+            "level": "A1",
+            "type": "language"
+        })
+    
+    st.markdown("---")
+    
+    # Edit existing languages
+    for i, lang in enumerate(languages):
+        with st.expander(f"🌍 {lang.get('name', 'Neue Sprache')}", expanded=False):
+            col1, col2 = st.columns(2)
+            
+            with col1:
+                name = st.text_input(
+                    f"Sprache {i+1}",
+                    value=lang.get("name", ""),
+                    key=f"lang_name_{i}",
+                    placeholder="z.B. Deutsch, Englisch, Französisch"
+                )
+            
+            with col2:
+                level = st.selectbox(
+                    f"Kompetenzstufe {i+1}",
+                    ["A1", "A2", "B1", "B2", "C1", "C2", "Muttersprache"],
+                    index=["A1", "A2", "B1", "B2", "C1", "C2", "Muttersprache"].index(
+                        lang.get("level", "A1")
+                    ) if lang.get("level") in ["A1", "A2", "B1", "B2", "C1", "C2", "Muttersprache"] else 0,
+                    key=f"lang_level_{i}",
+                    help="GER (Gemeinsamer Europäischer Referenzrahmen)"
+                )
+            
+            # Update language
+            languages[i] = {
+                "name": name,
+                "level": level,
+                "type": "language"
+            }
+            
+            # Delete button
+            if st.button(f"🗑️ Löschen", key=f"del_lang_{i}"):
+                st.session_state.cv_data["languages"].pop(i)
+                st.rerun()
+    
+    # Update languages in session state
+    st.session_state.cv_data["languages"] = languages
+
 def show_summary_and_export():
     """Show summary of all data and export options"""
     st.markdown('<h2 class="section-header">📋 Zusammenfassung & Export</h2>', unsafe_allow_html=True)
@@ -850,6 +1105,7 @@ def show_summary_and_export():
     col1, col2 = st.columns(2)
     with col1:
         st.write(f"**Stadt:** {personal.get('city', '-')}")
+        st.write(f"**Geburtsjahr:** {personal.get('birth_year', '-')}")
         st.write(f"**Verfügbarkeit:** {personal.get('availability', '-')}")
     with col2:
         if personal.get("summary"):
@@ -868,10 +1124,8 @@ def show_summary_and_export():
     experience = st.session_state.cv_data.get("experience", [])
     if experience:
         st.write(f"**{len(experience)} Position(en)**")
-        for i, exp in enumerate(experience[:3]):  # Show first 3
+        for i, exp in enumerate(experience):  # Show all
             st.write(f"• {exp.get('position', 'Unbekannt')} bei {exp.get('company', 'Unbekannt')} ({exp.get('start_date', '?')} - {exp.get('end_date', '?')})")
-        if len(experience) > 3:
-            st.write(f"*... und {len(experience)-3} weitere*")
     else:
         st.write("Keine Berufserfahrung hinzugefügt")
     
@@ -888,16 +1142,14 @@ def show_summary_and_export():
     education = st.session_state.cv_data.get("education", [])
     if education:
         st.write(f"**{len(education)} Abschluss/Abschlüsse**")
-        for edu in education[:2]:  # Show first 2
+        for edu in education:  # Show all
             st.write(f"• {edu.get('degree', 'Unbekannt')} - {edu.get('institution', 'Unbekannt')}")
     else:
         st.write("Keine Ausbildung hinzugefügt")
     
     skills = st.session_state.cv_data.get("skills", [])
     if skills:
-        st.write(f"**{len(skills)} Fähigkeit(en):** {', '.join(skills[:5])}")
-        if len(skills) > 5:
-            st.write(f"*... und {len(skills)-5} weitere*")
+        st.write(f"**{len(skills)} Fähigkeit(en):** {', '.join(skills)}")
     
     # Export Options
     st.markdown("---")
@@ -913,6 +1165,14 @@ def show_summary_and_export():
         if st.button("📋 Classic", key="template_classic", use_container_width=True,
                      type="primary" if st.session_state.template == "classic" else "secondary"):
             st.session_state.template = "classic"
+        
+        st.markdown("**Aufgaben-Anzeige**")
+        limit_tasks = st.checkbox(
+            "Max 5 Aufgaben pro Eintrag",
+            value=st.session_state.export_options.get("limit_tasks", True),
+            help="Begrenzt die Anzahl der Aufgaben-Stichpunkte im Export auf 5"
+        )
+        st.session_state.export_options["limit_tasks"] = limit_tasks
     
     with col2:
         st.markdown("**Datenschutz**")
@@ -922,9 +1182,33 @@ def show_summary_and_export():
             help="z.B. 'Max M.' statt 'Max Mustermann'"
         )
         st.session_state.anonymize = anonymize
-        
+
+        st.markdown("**Export Optionen**")
+        show_summary = st.checkbox(
+            "Zusammenfassung einblenden",
+            value=st.session_state.get("show_summary", True),
+            help="Profilzusammenfassung im Export anzeigen"
+        )
+        st.session_state.show_summary = show_summary
+
         st.write(f"🏢 **Unternehmen:** {st.session_state.company.capitalize()}")
-    
+
+    # Languages Summary
+    languages = st.session_state.cv_data.get("languages", [])
+    if languages:
+        st.markdown("---")
+        col1, col2 = st.columns([4, 1])
+        with col1:
+            st.markdown("### 🌍 Sprachen")
+        with col2:
+            if st.button("✏️ Bearbeiten", key="edit_languages"):
+                st.session_state.current_edit_step = 3 # Languages are part of step 3
+                st.rerun()
+
+        st.write(f"**{len(languages)} Sprache(n):**")
+        for lang in languages: # Show all
+            st.write(f"• {lang.get('name', 'Unbekannt')} - {lang.get('level', 'Unbekannt')}")
+
     # Preview Section
     st.markdown("---")
     st.markdown("### 👁️ Profilvorschau")
@@ -953,21 +1237,33 @@ def show_summary_and_export():
     col1, col2 = st.columns(2)
     
     with col1:
-        if st.button("📄 Als PDF herunterladen", type="primary", use_container_width=True):
+        if st.button("📄 Als PDF speichern", type="primary", use_container_width=True):
             try:
                 export_data = prepare_export_data(st.session_state.cv_data, st.session_state.anonymize)
-                exporter = ProfileExporter()
-                pdf_bytes = exporter.generate_pdf_from_data(export_data, st.session_state.company, st.session_state.template)
                 
+                # Generate HTML (same as preview)
+                html_content = render_profile_html(export_data, st.session_state.company)
+                
+                # Add print-friendly CSS
+                exporter = ProfileExporter()
+                html_for_print = exporter.html_to_pdf(html_content)
+                
+                # Show HTML in new page with print button
+                st.markdown("---")
+                st.success("✅ Profil bereit zum Drucken!")
+                st.info("💡 **Anleitung:** Klicke unten auf 'Profil in neuem Tab öffnen', dann drücke `Cmd+P` (Mac) oder `Strg+P` (Windows) und wähle 'Als PDF speichern'.")
+                
+                # Create download for HTML
                 st.download_button(
-                    label="📥 PDF herunterladen",
-                    data=pdf_bytes,
-                    file_name=f"profile_{st.session_state.company}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.pdf",
-                    mime="application/pdf",
+                    label="📄 Profil in neuem Tab öffnen",
+                    data=html_for_print,
+                    file_name=f"profile_{st.session_state.company}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.html",
+                    mime="text/html",
                     use_container_width=True
                 )
+                
             except Exception as e:
-                st.error(f"Fehler beim PDF-Export: {str(e)}")
+                st.error(f"Fehler beim Export: {str(e)}")
     
     with col2:
         if st.button("📝 Als Word herunterladen", type="secondary", use_container_width=True):
@@ -1043,23 +1339,30 @@ def show_preview_and_export():
     col1, col2 = st.columns(2)
     
     with col1:
-        if st.button("📄 Als PDF herunterladen", type="secondary"):
+        if st.button("📄 Als PDF speichern", type="secondary"):
             try:
                 # Prepare data for export (with or without anonymization)
                 export_data = prepare_export_data(st.session_state.cv_data, st.session_state.anonymize)
                 
+                # Generate HTML (same as preview)
+                html_content = render_profile_html(export_data, st.session_state.company)
+                
+                # Add print-friendly CSS
                 exporter = ProfileExporter()
-                pdf_bytes = exporter.generate_pdf_from_data(export_data, st.session_state.company, st.session_state.template)
+                html_for_print = exporter.html_to_pdf(html_content)
+                
+                st.success("✅ Profil bereit!")
+                st.info("💡 Öffne die HTML-Datei und drücke Cmd+P / Strg+P zum Drucken als PDF.")
                 
                 st.download_button(
-                    label="PDF herunterladen",
-                    data=pdf_bytes,
-                    file_name=f"profile_{st.session_state.company}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.pdf",
-                    mime="application/pdf"
+                    label="📄 HTML öffnen",
+                    data=html_for_print,
+                    file_name=f"profile_{st.session_state.company}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.html",
+                    mime="text/html"
                 )
                 
             except Exception as e:
-                st.error(f"Fehler beim PDF-Export: {str(e)}")
+                st.error(f"Fehler beim Export: {str(e)}")
     
     with col2:
         if st.button("📝 Als Word herunterladen", type="secondary"):
@@ -1108,6 +1411,13 @@ def prepare_export_data(cv_data, anonymize=False):
         personal["name"] = anonymize_name(personal["name"])
     
     export_data["personal"] = personal
+    
+    # Add export options
+    export_data["_export_options"] = {
+        "limit_tasks": st.session_state.export_options.get("limit_tasks", True),
+        "show_summary": st.session_state.get("show_summary", True)
+    }
+    
     return export_data
 
 if __name__ == "__main__":

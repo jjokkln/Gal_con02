@@ -1,43 +1,15 @@
-# CV2Profile - Implementation Progress & Feature Tracker
+**TODO - Neue Features:**
+```
+[✅] Profilbild-Upload für Bewerber (Zeile 514-548 streamlit_app.py + exporters.py PDF/DOCX)
+[✅] Drag & Drop Zone visuell verbessern (CSS Zeile 77-122 mit Bounce-Animation)
+[✅] Dark Mode hinzufügen, alle Elemente gut sichtbar halten (apply_theme_css + toggle_theme)
+[✅] Light Mode Gradient hintergrund in 80% transparent baby blau hinzufügen (apply_theme_css)
+[✅] Monats-/Jahres Picker für Daten (month_year_picker Funktion Zeile 224-256)
+[✅] Sprachen mit Kompetenzstufen (edit_languages_data Zeile 999-1068 + Export Backend)
+[✅] Profilzusammenfassung zentriert unter Header (exporters.py Zeile 146-157)
+[✅] Aufgaben als max 5 Stichpunkte mit Toggle-Button (exporters.py + streamlit_app.py)
+[ ] Auf der Seite Berufserfahrungen einen Button mit "Alle ausklappen" haben, Bei dem sich die berufserfahrungen alle öffnen
 
-**Letzte Aktualisierung:** 2025-10-20  
-**Version:** 1.0.0  
-**Status:** ✅ Production Ready
-
----
-
-## 📊 Projekt-Übersicht
-
-### Implementierte Features
-- ✅ Python Core Module (Extractor, Renderer, Exporters)
-- ✅ FastAPI Backend mit REST API
-- ✅ Streamlit App (Haupt-Interface)
-- ✅ Next.js Frontend (Alternative UI)
-- ✅ PDF/DOCX Export
-- ✅ Manuelle Dateneingabe
-- ✅ API Key Management via .env
-- ✅ Startskripte für einfachen Launch
-
-### Pending Features
-- ⏳ _Platz für neue Features - siehe Abschnitte unten_
-
----
-
-## 🎨 1. STREAMLIT APP (Haupt-Interface)
-
-### 1.1 Startseite / Upload Section
-
-**Status:** ✅ Implementiert
-
-**Designelemente:**
-- Glasmorphism Card Container
-- Zentriertes Layout
-- Gradient Background (Blue-Indigo-Purple)
-- Custom CSS für moderne Optik
-
-**Funktionen:**
-- ✅ Unternehmensauswahl (Radio Buttons: Galdora/BeJob)
-- ✅ Zwei Modi: "CV hochladen" oder "Manuell eingeben"
 - ✅ File Uploader (PDF, DOCX, JPG, PNG, max 10MB)
 - ✅ OpenAI API Key Management
   - Automatisches Laden aus .env
@@ -46,17 +18,6 @@
 - ✅ Validierung (Dateigröße, Format)
 - ✅ AI-Extraktion mit Async/Await Support
 
-**TODO - Neue Features:**
-```
-[ ] Logo-Upload für Unternehmen
-[ ] Mehrsprachige UI (DE/EN Toggle)
-[ ] Drag & Drop Zone visuell verbessern
-[ ] Vorschau der hochgeladenen Datei vor Analyse
-[ ] Batch-Upload (mehrere CVs gleichzeitig)
-[ ] _Eigene Ideen:_
-    - 
-    - 
-```
 
 ---
 
@@ -73,21 +34,15 @@
 #### Tab 1: Persönliche Daten
 - ✅ Name, E-Mail, Telefon (Input Fields)
 - ✅ Adresse (Textarea)
-- ✅ LinkedIn Profil
 - ✅ Profilbeschreibung/Summary
 - ✅ Live-Update in Session State
 
 **TODO - Persönliche Daten:**
 ```
 [ ] Foto-Upload für Profilbild
-[ ] Geburtsdatum Feld
-[ ] Nationalität Dropdown
-[ ] Social Media Links (Twitter, GitHub, etc.)
-[ ] Sprachen mit Kompetenzstufen
-[ ] _Eigene Ideen:_
-    - 
-    - 
-```
+[ ] Geburtsjahr Feld
+
+
 
 #### Tab 2: Berufserfahrung
 - ✅ Liste aller Positionen
@@ -97,16 +52,8 @@
 
 **TODO - Berufserfahrung:**
 ```
-[ ] Drag & Drop Sortierung (Reihenfolge ändern)
-[ ] Monats-/Jahres Picker für Daten
-[ ] Automatische Berechnung der Dauer
-[ ] Tags für Skills pro Position
-[ ] Import aus LinkedIn
-[ ] Bullet-Point Editor für Beschreibung
-[ ] _Eigene Ideen:_
-    - 
-    - 
-```
+[ ] 
+
 
 #### Tab 3: Ausbildung & Weiterbildung
 - ✅ Separate Listen für Ausbildung/Weiterbildung
@@ -119,8 +66,7 @@
 [ ] Drag & Drop Sortierung
 [ ] Note/GPA Feld
 [ ] Abschlussart Dropdown
-[ ] Relevante Kurse hinzufügen
-[ ] Honors & Awards Section
+
 [ ] _Eigene Ideen:_
     - 
     - 
@@ -138,10 +84,6 @@
 [ ] Kategorisierung (Technical/Soft Skills)
 [ ] Skill-Vorschläge basierend auf Position
 [ ] Visuelles Rating System
-[ ] Skill-Endorsements zählen
-[ ] _Eigene Ideen:_
-    - 
-    - 
 ```
 
 #### Tab 5: Vorschau & Export
@@ -151,13 +93,12 @@
 
 **TODO - Vorschau & Export:**
 ```
-[ ] Live HTML-Vorschau in iframe
 [ ] Zoom Controls (50%-300%)
 [ ] Template-Auswahl (Classic, Modern, Minimal)
 [ ] Farbschema-Anpassung
-[ ] Seitennavigation bei mehrseitigen PDFs
-[ ] Direktes Teilen via E-Mail
-[ ] QR-Code für Online-Profil
+[ ] Seitennavigation bei mehrseitigen PDFs [!!Wichtig]
+[ ] Abschnitte zusammenhalten (Kein Seitenumbruch innerhlb Kategorien)
+[ ] Fußzeile hinzufügen: www.galdora.de / mailto:info@galdora.de / 02161 ...
 [ ] _Eigene Ideen:_
     - 
     - 
@@ -179,7 +120,7 @@
 [ ] Session speichern/laden (Browser LocalStorage)
 [ ] Mehrere Profile verwalten
 [ ] Automatisches Speichern alle 30 Sekunden
-[ ] Versionsverwaltung (Änderungen zurückverfolgen)
+[ ] Versionsverwaltung (Änderungen zurückverfolgen) 
 [ ] Export/Import von Session-Daten als JSON
 [ ] _Eigene Ideen:_
     - 
@@ -233,14 +174,7 @@
 ```
 [ ] Mehrsprachige CVs erkennen
 [ ] Tabellen-Extraktion verbessern
-[ ] Confidence Score für extrahierte Daten
-[ ] Fallback auf Alternative OCR (Tesseract)
-[ ] Erkennung von Zertifikats-Scans
-[ ] Automatische Duplikat-Erkennung
-[ ] _Eigene Ideen:_
-    - 
-    - 
-```
+[ ] Confidence Score für extrahierte Daten [!!Wichtig]
 
 ---
 
@@ -258,16 +192,9 @@
 ```
 [ ] Moderne Template-Variante
 [ ] Minimalistisches Template
-[ ] Creative/Designer Template
-[ ] Industrie-spezifische Templates
-[ ] Dark Mode Option
-[ ] Custom Font-Auswahl
-[ ] Template Preview-Galerie
-[ ] _Eigene Ideen:_
-    - 
-    - 
-```
 
+[ ] Template Preview-Galerie
+```
 ---
 
 ### 2.4 Core Module: Exporters
@@ -626,3 +553,5 @@ _Nutze diesen Bereich für spontane Gedanken und Ideen:_
 **Maintainer:** Lennard Kuss  
 **Project Status:** 🟢 Active Development
 
+
+Ich würde außerdem gerne das wenn ich Schritt 1 erledigt habe, dass ich dann als erstes die Profilvorlage sehen kann, auch wenn ich leere Profilvorlage auswählen. Ich möchte einfach nur das HTML, die HTML-Datei sehen, die erstellt wurde. Bei Bedarf kann ich dann mit der Bearbeitung weitermachen.  

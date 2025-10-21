@@ -21,13 +21,34 @@ class ProfileExporter:
     def __init__(self):
         pass
     
-    def html_to_pdf(self, html_string: str) -> bytes:
+    def html_to_pdf(self, html_string: str) -> str:
         """
-        Generate PDF directly from data (reportlab doesn't need HTML)
-        This method is kept for compatibility but generates PDF from scratch
+        Return HTML string for browser-based PDF printing
+        This method prepares HTML with print-friendly CSS
         """
-        # This is a placeholder - we'll use generate_pdf_from_data instead
-        raise NotImplementedError("Use generate_pdf_from_data instead")
+        # Add print-friendly CSS to the HTML
+        print_css = """
+        <style>
+            @media print {
+                @page {
+                    size: A4;
+                    margin: 2cm;
+                }
+                body {
+                    -webkit-print-color-adjust: exact;
+                    print-color-adjust: exact;
+                }
+            }
+        </style>
+        """
+        
+        # Insert CSS before closing head tag
+        if "</head>" in html_string:
+            html_with_print_css = html_string.replace("</head>", f"{print_css}</head>")
+        else:
+            html_with_print_css = print_css + html_string
+            
+        return html_with_print_css
     
     def generate_pdf_from_data(self, data: Dict[str, Any], company: str = "galdora", template: str = "modern") -> bytes:
         """
@@ -49,7 +70,7 @@ class ProfileExporter:
             
             # Company logo paths
             company_logos = {
-                "galdora": "ressources/galdoralogo.png",
+                "galdora": "ressources/galdora.svg",
                 "bejob": "ressources/bejob-logo.png"
             }
             logo_path = company_logos.get(company.lower())
@@ -73,48 +94,82 @@ class ProfileExporter:
                 spaceAfter=6
             )
             normal_style = styles['Normal']
+            bullet_style = ParagraphStyle(
+                'Bullet',
+                parent=normal_style,
+                leftIndent=0.5*cm,
+                bulletIndent=0.2*cm,
+                spaceBefore=0.1*cm,
+                bulletText='•'
+            )
             
             # Build PDF content
             content = []
-            
-            # Add company logo at the top
+
+            # Header: Logo rechts zentriert, Name/Position links zentriert
+            personal = data.get("personal", {})
+            header_elements = []
+
+            # Name und Position links zentriert (untereinander)
+            left_content = []
+            if personal.get("name"):
+                left_content.append(Paragraph(personal["name"], title_style))
+            if personal.get("position"):
+                left_content.append(Paragraph(personal["position"], normal_style))
+
+            if left_content:
+                left_cell = Table([[left_content[0]]] + [[left_content[i]] for i in range(1, len(left_content))],
+                                colWidths=[8*cm])
+                left_cell.setStyle(TableStyle([
+                    ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+                    ('VALIGN', (0, 0), (-1, -1), 'TOP'),
+                ]))
+                header_elements.append(left_cell)
+            else:
+                header_elements.append(Paragraph("", normal_style))
+
+            # Logo rechts zentriert
             if logo_path and os.path.exists(logo_path):
                 try:
-                    logo = Image(logo_path, width=4*cm, height=1.5*cm)
-                    content.append(logo)
-                    content.append(Spacer(1, 0.5*cm))
-                except:
-                    pass  # If logo fails, continue without it
-            
-            # Personal Data
-            personal = data.get("personal", {})
-            if personal.get("name"):
-                content.append(Paragraph(personal["name"], title_style))
-                content.append(Spacer(1, 0.3*cm))
-            
-            # Contact Info
-            contact_parts = []
-            if personal.get("email"):
-                contact_parts.append(personal["email"])
-            if personal.get("phone"):
-                contact_parts.append(personal["phone"])
-            if personal.get("address"):
-                contact_parts.append(personal["address"])
-            
-            if contact_parts:
-                contact_text = " | ".join(contact_parts)
-                contact_style = ParagraphStyle('Contact', parent=normal_style, alignment=TA_CENTER)
-                content.append(Paragraph(contact_text, contact_style))
+                    if logo_path.lower().endswith('.svg'):
+                        logo = Image(logo_path, width=4*cm, height=1.5*cm)
+                    else:
+                        logo = Image(logo_path, width=4*cm, height=1.5*cm)
+                    header_elements.append(logo)
+                except Exception as e:
+                    header_elements.append(Paragraph("", normal_style))
+            else:
+                header_elements.append(Paragraph("", normal_style))
+
+            # Header Table (Name/Position links, Logo rechts) - kürzer
+            if len(header_elements) == 2:
+                header_table = Table([header_elements], colWidths=[8*cm, 7*cm])
+                header_table.setStyle(TableStyle([
+                    ('ALIGN', (0, 0), (0, 0), 'CENTER'),
+                    ('ALIGN', (1, 0), (1, 0), 'CENTER'),
+                    ('VALIGN', (0, 0), (-1, -1), 'TOP'),
+                ]))
+                content.append(header_table)
                 content.append(Spacer(1, 0.5*cm))
-            
-            # Summary
-            if personal.get("summary"):
-                content.append(Spacer(1, 0.3*cm))
-                content.append(Paragraph(personal["summary"], normal_style))
-                content.append(Spacer(1, 0.5*cm))
+
+            # Summary direkt unter Header zentriert (optional)
+            show_summary = data.get("_export_options", {}).get("show_summary", True)
+            if show_summary and personal.get("summary"):
+                summary_style = ParagraphStyle(
+                    'Summary',
+                    parent=normal_style,
+                    alignment=TA_CENTER,
+                    fontSize=11,
+                    spaceBefore=0.3*cm,
+                    spaceAfter=0.5*cm,
+                    textColor=colors.grey
+                )
+                content.append(Paragraph(personal["summary"], summary_style))
             
             # Experience
             experience = data.get("experience", [])
+            limit_tasks = data.get("_export_options", {}).get("limit_tasks", True)
+            
             if experience:
                 content.append(Paragraph("Berufserfahrung", heading_style))
                 for exp in experience:
@@ -125,7 +180,15 @@ class ProfileExporter:
                     date_style = ParagraphStyle('Dates', parent=normal_style, textColor=colors.grey)
                     content.append(Paragraph(dates, date_style))
                     
-                    if exp.get("description"):
+                    # Tasks als Stichpunkte (max 5 wenn limit_tasks=True)
+                    tasks = exp.get("tasks", [])
+                    if tasks:
+                        display_tasks = tasks[:5] if limit_tasks else tasks
+                        for task in display_tasks:
+                            bullet_para = Paragraph(f"• {task}", normal_style)
+                            content.append(bullet_para)
+                    elif exp.get("description"):
+                        # Fallback für altes Format
                         content.append(Paragraph(exp["description"], normal_style))
                     content.append(Spacer(1, 0.3*cm))
             
@@ -151,6 +214,16 @@ class ProfileExporter:
                 content.append(Paragraph("Fähigkeiten & Kompetenzen", heading_style))
                 skills_text = ", ".join(skills)
                 content.append(Paragraph(skills_text, normal_style))
+                content.append(Spacer(1, 0.3*cm))
+            
+            # Languages
+            languages = data.get("languages", [])
+            if languages:
+                content.append(Paragraph("Sprachen", heading_style))
+                for lang in languages:
+                    lang_text = f"<b>{lang.get('name', '')}</b> - {lang.get('level', '')}"
+                    content.append(Paragraph(lang_text, normal_style))
+                    content.append(Spacer(1, 0.2*cm))
                 content.append(Spacer(1, 0.3*cm))
             
             # Build PDF
@@ -211,6 +284,8 @@ class ProfileExporter:
             
             # Add experience
             experience = data.get("experience", [])
+            limit_tasks = data.get("_export_options", {}).get("limit_tasks", True)
+            
             if experience:
                 doc.add_heading("Berufserfahrung", level=1)
                 for exp in experience:
@@ -222,8 +297,13 @@ class ProfileExporter:
                         date_para = doc.add_paragraph()
                         date_para.add_run(f"{exp.get('start_date', '')} - {exp.get('end_date', '')}").italic = True
                     
-                    # Description
-                    if exp.get("description"):
+                    # Tasks als Stichpunkte oder Description als Fallback
+                    tasks = exp.get("tasks", [])
+                    if tasks:
+                        display_tasks = tasks[:5] if limit_tasks else tasks
+                        for task in display_tasks:
+                            doc.add_paragraph(task, style='List Bullet')
+                    elif exp.get("description"):
                         desc_para = doc.add_paragraph(exp["description"])
             
             # Add education
@@ -249,6 +329,14 @@ class ProfileExporter:
                 doc.add_heading("Fähigkeiten & Kompetenzen", level=1)
                 skills_para = doc.add_paragraph()
                 skills_para.add_run(", ".join(skills))
+            
+            # Add languages
+            languages = data.get("languages", [])
+            if languages:
+                doc.add_heading("Sprachen", level=1)
+                for lang in languages:
+                    lang_para = doc.add_paragraph()
+                    lang_para.add_run(f"{lang.get('name', '')} - {lang.get('level', '')}").bold = True
             
             # Add certifications
             certifications = data.get("certifications", [])
