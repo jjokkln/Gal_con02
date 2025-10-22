@@ -572,6 +572,10 @@
 - ✅ Enhanced Print-CSS für perfekte Druckausgabe
 - ✅ Version 1.0.9 erfolgreich auf GitHub gepusht
 - ✅ Streamlit Cloud Deployment bereit
+- ✅ Profilbild-Integration in klassischer Vorlage (rechts neben Logo, 120x160px)
+- ✅ Verknüpfung mit Upload-Feld in "Persönliche Daten"
+- ✅ Profilbild vergrößert und Rahmen entfernt
+- ✅ Profilbild 2cm nach unten verschoben für optimale Positionierung
 
 ### Geplante Updates
 ```

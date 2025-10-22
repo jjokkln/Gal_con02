@@ -428,7 +428,10 @@ class TemplateRenderer:
         body { font-family: Arial, sans-serif; font-size: 11pt; line-height: 1.4; }
         .container { max-width: 210mm; margin: 0 auto; padding: 20mm 15mm; background: white; }
         
-        .logo { max-width: 200px; margin-bottom: 30px; }
+        .header-section { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 30px; }
+        .logo { max-width: 200px; }
+        .profile-photo { width: 120px; height: 160px; object-fit: cover; margin-top: 20mm; }
+        
         h1 { font-size: 24pt; color: {{ company_colors.primary }}; margin-bottom: 5px; font-weight: 700; letter-spacing: -0.5px; }
         h2 { font-size: 14pt; margin-bottom: 15px; font-weight: 600; }
         
@@ -461,15 +464,24 @@ class TemplateRenderer:
             }
             .section { page-break-inside: avoid; }
             .section h3 { padding-top: 10mm; page-break-after: avoid; }
-            .logo + h1 + h2 + .contact-box + .info-grid + .section h3,
-            .logo + h1 + h2 + .info-grid + .section h3 { padding-top: 0; }
+            .header-section + h1 + h2 + .contact-box + .info-grid + .section h3,
+            .header-section + h1 + h2 + .info-grid + .section h3 { padding-top: 0; }
             @page { size: A4; margin: 30mm 15mm 20mm 15mm; }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        {% if company_logo %}<img src="{{ company_logo }}" class="logo">{% endif %}
+        <div class="header-section">
+            <div>
+                {% if company_logo %}<img src="{{ company_logo }}" class="logo">{% endif %}
+            </div>
+            {% if personal.photo %}
+            <div>
+                <img src="data:image/png;base64,{{ personal.photo }}" class="profile-photo" alt="Profilbild">
+            </div>
+            {% endif %}
+        </div>
         
         <h1>Profil</h1>
         <h2>{{ personal.name }}</h2>
